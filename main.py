@@ -2,12 +2,36 @@ import time
 import pandas as pd
 import re
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
 
+# Use Chrome options to start with a temporary user data directory and disable the first-run and default browser checks
+chrome_options = Options()
+chrome_options.add_argument("--no-first-run")
+chrome_options.add_argument("--no-default-browser-check")
+chrome_options.add_argument("--disable-features=EnableEphemeralFlashPermission")
+chrome_options.add_argument("--disable-popup-blocking")
+chrome_options.add_argument("--disable-infobars")
+chrome_options.add_argument("--disable-notifications")
+chrome_options.add_argument("--disable-save-password-bubble")
+chrome_options.add_argument("--disable-extensions")
+chrome_options.add_argument("--guest")
+chrome_options.add_argument("--user-data-dir=/tmp/selenium_profile")  # Use a temp directory
+
+driver = webdriver.Chrome(options=chrome_options)
+
+# Get Credentials
+from dotenv import load_dotenv
+import os
+load_dotenv()
+email = os.getenv('USER_EMAIL')
+password = os.getenv('PASSWORD')
+
+
 # --- CONFIGURATION ---
-EXCEL_FILE = '2025-Projector-Refresh-Import-Header-ForScripting-Subset.xlsx'
+EXCEL_FILE = './information/2025-Projector-Refresh-Import-Header-ForScripting-Subset.xlsx'
 TICKET_PO = '251636'
 SITE = 'Technology Services'
 ROOM = '214'
@@ -32,10 +56,30 @@ driver = webdriver.Chrome()
 wait = WebDriverWait(driver, 20)
 
 # --- LOGIN (customize as needed) ---
-driver.get('https://mercedcsd.gethelphss.com/Login/landing')  # Suspected Login Link
-# wait.until(EC.presence_of_element_located((By.ID, 'username'))).send_keys('your_username')
+driver.get('https://mercedcsd.gethelphss.com/Login/landing')  # Login Page
+
+# Wait for and click the initial "Sign In" button
+wait.until(EC.element_to_be_clickable((By.ID, 'signInBtn'))).click()
+
 # wait.until(EC.presence_of_element_located((By.ID, 'password'))).send_keys('your_password')
+
+print(os.getenv('USER_EMAIL'))
+print(email)
+wait.until(EC.presence_of_element_located((By.ID, 'identifierId'))).send_keys(email)
+time.sleep(2)  # Wait 2 seconds
+wait.until(EC.element_to_be_clickable((By.ID, 'identifierNext'))).click()
+time.sleep(5)  # Wait 5 seconds
+# Wait for the password field to appear, then input the password
+password_field = wait.until(
+    EC.presence_of_element_located((By.NAME, "Passwd"))
+)
+password_field.clear()
+password_field.send_keys(password)
+
+wait.until(EC.element_to_be_clickable((By.ID, 'passwordNext'))).click()
+
 # wait.until(EC.element_to_be_clickable((By.ID, 'loginButton'))).click()
+
 # time.sleep(3)  # Adjust as needed for login to complete
 
 # --- TICKET CREATION LOOP ---
