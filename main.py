@@ -3,6 +3,7 @@ import os
 import pandas as pd
 import re
 from selenium import webdriver
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait, Select
@@ -52,17 +53,13 @@ df = pd.read_excel(EXCEL_FILE)
 # --- SELENIUM SETUP ---
 driver = webdriver.Chrome(options=options)
 wait = WebDriverWait(driver, 20)
-time.sleep(5)
+time.sleep(3)
 
 # --- SSO/Account Selection Logic ---
 try:
     # 1. Navigate to login page and click Sign In
     driver.get('https://mercedcsd.gethelphss.com/Login/landing')
     wait.until(EC.element_to_be_clickable((By.ID, 'signInBtn'))).click()
-    for i in range(1, 6):  # Counts from 1 to 5
-        print(f"{i} second(s)")
-        time.sleep(1)  # Waits for 1 second
-        print("Done!")
     # 2. Handle account selection popup if it appears
     #continue_btns = driver.find_elements(By.XPATH, "//button[contains(., 'Continue as Mark Bartolo') or contains(., 'mbartolo@mercedcsd.org')]")
     account_btns = driver.find_elements(By.XPATH, "//div[contains(text(), 'mbartolo@mercedcsd.org')]")
@@ -212,6 +209,14 @@ for idx, row in df.iterrows():
     submitted_by_input.send_keys(Keys.ARROW_DOWN)
     submitted_by_input.send_keys(Keys.ENTER)
     submitted_by_input.send_keys(Keys.TAB)
+    time.sleep(0.5)
+    # Blur the field by clicking elsewhere (recommended over multiple TABs)
+    driver.execute_script("arguments[0].blur();", submitted_by_input)
+    time.sleep(1)
+    # Or click the page header to defocus
+    header = driver.find_element(By.XPATH, "//h4[@id='newTicketTitle']")
+    ActionChains(driver).move_to_element(header).click().perform()
+    time.sleep(1)
 
     # --- Submit the ticket ---
     # Wait until the "Create" button is enabled (no 'disabled' class)
@@ -220,6 +225,11 @@ for idx, row in df.iterrows():
             (By.XPATH, "//button[contains(text(), 'Create') and not(contains(@class, 'disabled'))]")
         )
     )
+    # Scroll into view
+    driver.execute_script("arguments[0].scrollIntoView(true);", create_btn)
+    # Wait a moment for any UI updates
+    time.sleep(0.2)
+    
     create_btn.click()
     print(f"Ticket {idx+1} created: {summary}")
     time.sleep(2)  # Adjust as needed for rate limiting or UI transitions
