@@ -150,10 +150,30 @@ for idx, row in df.iterrows():
     )
 
     # --- Fill out the form fields ---
-    wait.until(EC.presence_of_element_located((By.ID, 'TicketSummary'))).send_keys(summary)
-    Select(wait.until(EC.presence_of_element_located((By.ID, 'TicketPriorityUid')))).select_by_visible_text(PRIORITY)
-    wait.until(EC.presence_of_element_located((By.ID, 'config.name'))).send_keys(str(tag))
-    wait.until(EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Room']"))).send_keys(ROOM)
+    summary_input = wait.until(
+    EC.element_to_be_clickable((By.XPATH, "//label[contains(., 'Summary')]/../../div[contains(@class, 'col-sm-9')]/input[@type='text']"))
+    )
+    summary_input.clear()
+    summary_input.send_keys(summary)
+    for i in range(1, 6):  # Counts from 1 to 5
+        print(f"{i} second(s)")
+        time.sleep(1)  # Waits for 1 second
+        print("Done!")
+
+
+    priority_dropdown = wait.until(
+        EC.element_to_be_clickable((By.ID, 'TicketPriorityUid'))
+    )
+    Select(priority_dropdown).select_by_visible_text(PRIORITY)
+
+    tag_input = wait.until(
+        EC.element_to_be_clickable((By.ID, 'config.name'))
+    )
+    tag_input.clear()
+    tag_input.send_keys(str(tag))
+
+    driver.save_screenshot("debug_summary_field.png") # take screenshot before crash
+
     # Site field may be an autocomplete; adjust as needed:
     site_input = wait.until(EC.presence_of_element_located((By.XPATH, "//input[contains(@placeholder, 'site')]")))
     site_input.clear()
