@@ -155,50 +155,73 @@ for idx, row in df.iterrows():
     )
     summary_input.clear()
     summary_input.send_keys(summary)
-    for i in range(1, 6):  # Counts from 1 to 5
-        print(f"{i} second(s)")
-        time.sleep(1)  # Waits for 1 second
-        print("Done!")
-
 
     priority_dropdown = wait.until(
         EC.element_to_be_clickable((By.ID, 'TicketPriorityUid'))
     )
     Select(priority_dropdown).select_by_visible_text(PRIORITY)
 
+    # --- Input Tag ---
     tag_input = wait.until(
         EC.element_to_be_clickable((By.ID, 'config.name'))
     )
     tag_input.clear()
     tag_input.send_keys(str(tag))
 
-    driver.save_screenshot("debug_summary_field.png") # take screenshot before crash
-
-    # Site field may be an autocomplete; adjust as needed:
-    site_input = wait.until(EC.presence_of_element_located((By.XPATH, "//input[contains(@placeholder, 'site')]")))
-    site_input.clear()
-    site_input.send_keys(SITE)
-    time.sleep(1)  # Wait for autocomplete dropdown
-    site_input.send_keys('\n')  # Select first suggestion
-
-    # Description (rich text editor)
-    desc_frame = wait.until(EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'fr-element')]")))
+    # --- Description (Rich Text Editor) ---
+    desc_frame = wait.until(
+        EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'fr-element')]"))
+    )
     desc_frame.click()
     desc_frame.send_keys(description)
 
-    # Assigned To dropdown
-    Select(wait.until(EC.presence_of_element_located((By.XPATH, "//select[contains(@aria-label, 'Assigned To')]")))).select_by_visible_text(ASSIGNED_TO)
+    # --- Assigned To dropdown ---
+    assigned_to_dropdown = wait.until(
+        EC.element_to_be_clickable((
+            By.XPATH,
+            "//div[contains(@class, 'form-group') and .//div[contains(., 'Assigned To:')]]//select"
+        ))
+    )
+    dropdown = Select(assigned_to_dropdown)
+    target = ASSIGNED_TO
+    found = False
+    for option in dropdown.options:
+        if option.text.strip() == target:
+            dropdown.select_by_visible_text(option.text)
+            found = True
+            break
+    if not found:
+        print("Available options:")
+        for option in dropdown.options:
+            print(f"'{option.text}'")
+        raise Exception(f"Could not find '{target}' in dropdown.")
 
-    # Submitted By dropdown (may be a combobox/autocomplete)
-    submitted_by_input = wait.until(EC.presence_of_element_located((By.XPATH, "//input[contains(@aria-label, 'Submitted By')]")))
+    #driver.save_screenshot("debug_summary_field2png") # take screenshot before crash 
+
+    # --- Submitted By dropdown (may be a combobox/autocomplete)---
+    submitted_by_input = wait.until(
+        EC.element_to_be_clickable(
+            (By.XPATH, "//input[@role='combobox' and (@placeholder='Type or select a user...' or contains(@aria-label, 'Type or select a user'))]")
+        )
+    )
     submitted_by_input.clear()
     submitted_by_input.send_keys(SUBMITTED_BY)
-    time.sleep(1)
-    submitted_by_input.send_keys('\n')
+    time.sleep(1)  # Wait for the dropdown to populate
+    # Press down arrow and enter to select the first matching user
+    from selenium.webdriver.common.keys import Keys
+    submitted_by_input.send_keys(Keys.ARROW_DOWN)
+    submitted_by_input.send_keys(Keys.ENTER)
+    submitted_by_input.send_keys(Keys.TAB)
 
     # --- Submit the ticket ---
-    wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Create')]"))).click()
+    # Wait until the "Create" button is enabled (no 'disabled' class)
+    create_btn = wait.until(
+        EC.element_to_be_clickable(
+            (By.XPATH, "//button[contains(text(), 'Create') and not(contains(@class, 'disabled'))]")
+        )
+    )
+    create_btn.click()
     print(f"Ticket {idx+1} created: {summary}")
-    time.sleep(2)  # Adjust this time. Not sure if it will lock us out for creating too many tickets in a short amount of time.
+    time.sleep(2)  # Adjust as needed for rate limiting or UI transitions
 
 driver.quit()
