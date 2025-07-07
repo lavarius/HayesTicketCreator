@@ -30,7 +30,7 @@ options.add_argument(f"profile-directory={profile_name}")
 options.add_argument("--disable-extensions")
 
 # --- CONFIGURATION ---
-EXCEL_FILE = './information/2025-Projector-Refresh-Import-Header-ForScripting-Subset.xlsx'
+EXCEL_FILE = './information/2025-Projector-Refresh-Import-Header-ForScripting-FULL.xlsx'
 TICKET_PO = '251636'
 SITE = 'Technology Services'
 ROOM = '214'
@@ -229,7 +229,7 @@ for idx, row in df.iterrows():
     driver.execute_script("arguments[0].scrollIntoView(true);", create_btn)
     # Wait a moment for any UI updates
     time.sleep(0.2)
-    
+
     create_btn.click()
     print(f"Ticket {idx+1} created: {summary}")
     time.sleep(2)  # Adjust as needed for rate limiting or UI transitions
