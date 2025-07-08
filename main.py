@@ -101,7 +101,7 @@ except Exception as e:
 
 # --- TICKET CREATION LOOP ---
 for idx, row in df.iterrows():
-    projector = row['Projector Name']
+    projector = row['Device Name']
     tag = row['Tag']
     prefix = extract_prefix(projector)
     room = extract_room(projector)
@@ -129,13 +129,22 @@ for idx, row in df.iterrows():
     devices_card.click()
 
 
-    # Select "Projectors / Speakers"
-    proj_card = wait.until(
+    # Select "Desktops / Laptops"
+    desktop_card = wait.until(
         EC.element_to_be_clickable(
-            (By.XPATH, "//p[text()='Projectors / Speakers']/ancestor::div[contains(@class, 'gh-flat-corner') and contains(@class, 'card')]")
+            (By.XPATH, "//p[text()='Desktop / Laptops']/ancestor::div[contains(@class, 'gh-flat-corner')]")
         )
     )
-    proj_card.click()
+    desktop_card.click()
+
+    # Changeable by dropdown in GUI if GUI is created for thiss
+    # Select "Projectors / Speakers"
+    # proj_card = wait.until(
+    #     EC.element_to_be_clickable(
+    #         (By.XPATH, "//p[text()='Projectors / Speakers']/ancestor::div[contains(@class, 'gh-flat-corner') and contains(@class, 'card')]")
+    #     )
+    # )
+    # proj_card.click()
 
 
     # Wait for the specific ticket form title to appear
