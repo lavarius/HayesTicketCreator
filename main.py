@@ -10,6 +10,9 @@ from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
 from dotenv import load_dotenv
 
+from utils.selenium_helpers import text_to_be_present_in_element_either
+from utils.selenium_helpers import select_ticket_card
+
 # --- Get Credentials ---
 load_dotenv()
 email = os.getenv('USER_EMAIL')
@@ -22,6 +25,10 @@ profile_path = os.path.join(profile_base, profile_name)
 if not os.path.exists(profile_path):
     os.makedirs(profile_path)
     print("Profile directory created. Please launch Chrome once manually to initialize the profile.")
+
+# Set your desired ticket type here
+# Changeable by dropdown in GUI if GUI is created for this
+ticket_type = "Desktops / Laptops"  # or "Projectors / Speakers", "Chromebooks"
 
 # --- Chrome Options---
 options = webdriver.ChromeOptions()
@@ -59,43 +66,48 @@ try:
     driver.get('https://mercedcsd.gethelphss.com/Login/landing')
     wait.until(EC.element_to_be_clickable((By.ID, 'signInBtn'))).click()
 
-    driver.save_screenshot("debug_summary_field2png") # take screenshot before crash 
+    # 3. Handle Google SSO fields if no account selection popup
+    #mail_fields = driver.find_elements(By.ID, 'identifierId')
+    email_field =  wait.until(EC.element_to_be_clickable((By.ID, "identifierId")))
+    email_field.clear()
+    email_field.send_keys(email)
+    time.sleep(1)
+    wait.until(EC.element_to_be_clickable((By.ID, 'identifierNext'))).click()
+    time.sleep(1)
+    # if email_field:
+    #     email_field = email_fields[0]
+    #     if not email_field.get_attribute('value'):
+    #         email_field.send_keys(email)
+    #         print("Entered email address.")
+    #     else:
+    #         print("Email already present, skipping entry.")
+    #     wait.until(EC.element_to_be_clickable((By.ID, 'identifierNext'))).click()
+    #     time.sleep(2)
+    # else:
+    #     print("No email field found; assuming already filled or skipped.")
+
+    # 4. Enter password if prompted
+    password_fields = driver.find_elements(By.NAME, 'Passwd')
+    if password_fields:
+        password_field = password_fields[0]
+        password_field.clear()
+        password_field.send_keys(password)
+        print("Entered password.")
+        wait.until(EC.element_to_be_clickable((By.ID, 'passwordNext'))).click()
+        time.sleep(5)
+    else:
+        print("No password field found; assuming already authenticated or skipped.")
 
     # 2. Handle account selection popup if it appears
     account_btns = driver.find_elements(By.XPATH, f"//div[contains(text(), '{email}')]")
     if account_btns:
         account_btns[0].click()
         print(f"Clicked 'Continue as {email}' or matching account.")
-        time.sleep(2)
+        time.sleep(5)
         # password_field = wait.until(EC.presence_of_element_located((By.NAME, "Passwd")))
         # password_field.send_keys(password)
         # driver.find_element(By.ID, 'passwordNext').click()
-
-        # 3. Handle Google SSO fields if no account selection popup
-        email_fields = driver.find_elements(By.ID, 'identifierId')
-        if email_fields:
-            email_field = email_fields[0]
-            if not email_field.get_attribute('value'):
-                email_field.send_keys(email)
-                print("Entered email address.")
-            else:
-                print("Email already present, skipping entry.")
-            wait.until(EC.element_to_be_clickable((By.ID, 'identifierNext'))).click()
-            time.sleep(2)
-        else:
-            print("No email field found; assuming already filled or skipped.")
-
-        # 4. Enter password if prompted
-        password_fields = driver.find_elements(By.NAME, 'Passwd')
-        if password_fields:
-            password_field = password_fields[0]
-            password_field.clear()
-            password_field.send_keys(password)
-            print("Entered password.")
-            wait.until(EC.element_to_be_clickable((By.ID, 'passwordNext'))).click()
-            time.sleep(2)
-        else:
-            print("No password field found; assuming already authenticated or skipped.")
+        
 except Exception as e:
     print(f"Login/Profile selection step encountered an issue: {e}")
 
@@ -128,30 +140,14 @@ for idx, row in df.iterrows():
     )
     devices_card.click()
 
-
-    # Select "Desktops / Laptops"
-    desktop_card = wait.until(
-        EC.element_to_be_clickable(
-            (By.XPATH, "//p[text()='Desktop / Laptops']/ancestor::div[contains(@class, 'gh-flat-corner')]")
-        )
-    )
-    desktop_card.click()
-
-    # Changeable by dropdown in GUI if GUI is created for thiss
-    # Select "Projectors / Speakers"
-    # proj_card = wait.until(
-    #     EC.element_to_be_clickable(
-    #         (By.XPATH, "//p[text()='Projectors / Speakers']/ancestor::div[contains(@class, 'gh-flat-corner') and contains(@class, 'card')]")
-    #     )
-    # )
-    # proj_card.click()
-
+    # Use the helper to select the card, "Desktops / Laptops" / "Projectors / Speakers"
+    select_ticket_card(wait, ticket_type)
 
     # Wait for the specific ticket form title to appear
     wait.until(
-        EC.text_to_be_present_in_element(
+        text_to_be_present_in_element_either(
             (By.ID, "newTicketTitle"),
-            'New "Projectors / Speakers" Ticket'
+            ['New "Projectors / Speakers" Ticket', 'New "Desktop / Laptops" Ticket']
         )
     )
 
