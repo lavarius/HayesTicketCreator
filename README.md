@@ -10,7 +10,7 @@ This repository provides a Python Selenium automation script to bulk-create help
 
 - Automates browser actions to:
 
-  - Log in via Google SSO (without Chrome profile - Manual Selection)
+  - Log in via Google Login (without SSO/Chrome profile - Manual Selection -> Select `Use Chrome without an account`)
 
   - Navigate the multi-step ticket creation UI (e.g. Technology → Devices → Projectors / Speakers)
 
