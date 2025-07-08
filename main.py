@@ -60,10 +60,10 @@ try:
     wait.until(EC.element_to_be_clickable((By.ID, 'signInBtn'))).click()
     # 2. Handle account selection popup if it appears
     #continue_btns = driver.find_elements(By.XPATH, "//button[contains(., 'Continue as Mark Bartolo') or contains(., 'mbartolo@mercedcsd.org')]")
-    account_btns = driver.find_elements(By.XPATH, "//div[contains(text(), 'mbartolo@mercedcsd.org')]")
+    account_btns = driver.find_elements(By.XPATH, f"//div[contains(text(), '{email}')]")
     if account_btns:
         account_btns[0].click()
-        print("Clicked 'Continue as Mark Bartolo' or matching account.")
+        print(f"Clicked 'Continue as {email}' or matching account.")
         time.sleep(2)
         password_field = wait.until(EC.presence_of_element_located((By.NAME, "Passwd")))
         password_field.send_keys(password)
