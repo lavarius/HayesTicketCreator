@@ -32,8 +32,6 @@ options.add_argument("--disable-extensions")
 # --- CONFIGURATION ---
 EXCEL_FILE = './information/2025-Projector-Refresh-Import-Header-ForScripting-FULL.xlsx'
 TICKET_PO = '251636'
-SITE = 'Technology Services'
-ROOM = '214'
 PRIORITY = 'Medium'
 ASSIGNED_TO = 'Mark Bartolo'
 SUBMITTED_BY = 'Ali Khabibullaiev'
