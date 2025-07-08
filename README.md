@@ -28,7 +28,7 @@ Google Chrome installed
 
 ChromeDriver matching your Chrome version (in your System Variables' PATH)
 
-Selenium, pandas, python-dotenv, openpyxl installed in your environment
+Selenium, pandas, python-dotenv, openpyxl installed in your environment (pip installed via `requirements.txt` below)
 
 ```bash
 pip install selenium pandas openpyxl python-dotenv
@@ -47,7 +47,7 @@ cd hayes-ticket-automation
 
 Create a dedicated Chrome user profile for automation, or use your existing one.
 
-The script expects a persistent profile directory (see .env below).
+The script expects a persistent profile directory (see `.env` below).
 
 ## 3. Configure Environment Variables
 
@@ -156,13 +156,3 @@ This project is licensed under the MIT License.
 # Support
 
 For issues, open a GitHub issue or contact the repository maintainer. Contributions and improvements are welcome!
-
-# Required file
-
-`.env` Structure
-
-```bash
-USER_EMAIL=
-password=
-PROFILE_PATH=
-```
