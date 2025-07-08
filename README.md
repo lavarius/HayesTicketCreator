@@ -71,14 +71,10 @@ PROFILE_BASE=C:/Users/yourusername/selenium_profile
 - The file should have at least these columns: Projector Name, Tag.
 
 Example:
-
-```text
-| Projector Name   | Tag    |
+| Projector Name | Tag |
 |------------------|--------|
-| BUR-RM01-PROJ    | 769452 |
-| BUR-RM02-PROJ    | 769453 |
-
-```
+| BUR-RM01-PROJ | 769452 |
+| BUR-RM02-PROJ | 769453 |
 
 # Usage
 
