@@ -10,9 +10,9 @@ This repository provides a Python Selenium automation script to bulk-create help
 
 - Automates browser actions to:
 
-  - Log in via Google SSO (with Chrome profile support)
+  - Log in via Google SSO (without Chrome profile - Manual Selection)
 
-  - Navigate the multi-step ticket creation UI (Technology → Devices → Projectors / Speakers)
+  - Navigate the multi-step ticket creation UI (e.g. Technology → Devices → Projectors / Speakers)
 
   - Fill out all required ticket fields, including dynamic summary and description
 
@@ -43,11 +43,9 @@ git clone https://github.com/your-org/hayes-ticket-automation.git
 cd hayes-ticket-automation
 ```
 
-## 2. Prepare Your Chrome Profile
+## 2. Prepare Your Chrome User Profile (Manual Input duuring automation)
 
-Create a dedicated Chrome user profile for automation, or use your existing one.
-
-The script expects a persistent profile directory (see `.env` below).
+Do NOT use your existing Chrome user profile for automation.
 
 ## 3. Configure Environment Variables
 
@@ -56,8 +54,6 @@ Create a `.env` file in your project root:
 ```plaintext
 USER_EMAIL=your.email@domain.com
 PASSWORD=your_google_password
-PROFILE_BASE=C:/Users/yourusername/selenium_profile
-
 ```
 
 - Do not use USERNAME as a variable name; it conflicts with system variables.
@@ -71,7 +67,7 @@ PROFILE_BASE=C:/Users/yourusername/selenium_profile
 - The file should have at least these columns: Projector Name, Tag.
 
 Example:
-| Projector Name | Tag |
+| Device Name | Tag |
 |------------------|--------|
 | BUR-RM01-PROJ | 769452 |
 | BUR-RM02-PROJ | 769453 |
@@ -127,8 +123,6 @@ python main.py
 
 - SSO Issues:
 
-  - Make sure your Chrome profile is set up and not in use elsewhere.
-
   - Credentials in .env must be accurate and complete.
 
 # Contributing
@@ -141,8 +135,8 @@ python main.py
 
 # Security & Privacy
 
-- Never commit `.env` or credentials to the repository.
-- Use a dedicated Chrome profile for automation to avoid interfering with personal browsing.
+- Never commit `.env` or credentials to the repository. Ensure `.env` is in of `.gitignore`.
+- Select `Use Chrome without an account` for automation to avoid interfering with personal browsing.
 
 # License
 
