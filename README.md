@@ -26,7 +26,7 @@ Python 3.8+
 
 Google Chrome installed
 
-ChromeDriver matching your Chrome version (in your PATH)
+ChromeDriver matching your Chrome version (in your System Variables' PATH)
 
 Selenium, pandas, python-dotenv, openpyxl installed in your environment
 
@@ -72,10 +72,13 @@ PROFILE_BASE=C:/Users/yourusername/selenium_profile
 
 Example:
 
-(Create table)
-Projector Name Tag
-BUR-RM01-PROJ 769452
-BUR-RM02-PROJ 769453
+```text
+| Projector Name   | Tag    |
+|------------------|--------|
+| BUR-RM01-PROJ    | 769452 |
+| BUR-RM02-PROJ    | 769453 |
+
+```
 
 # Usage
 
@@ -160,8 +163,10 @@ For issues, open a GitHub issue or contact the repository maintainer. Contributi
 
 # Required file
 
-.env
-Structure
+`.env` Structure
+
+```bash
 USER_EMAIL=
 password=
 PROFILE_PATH=
+```
