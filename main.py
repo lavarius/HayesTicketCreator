@@ -10,7 +10,7 @@ from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
 from dotenv import load_dotenv
 
-# Get Credentials
+# --- Get Credentials ---
 load_dotenv()
 email = os.getenv('USER_EMAIL')
 password = os.getenv('PASSWORD')
