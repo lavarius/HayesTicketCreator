@@ -25,12 +25,12 @@ if not os.path.exists(profile_path):
 
 # --- Chrome Options---
 options = webdriver.ChromeOptions()
-options.add_argument(f"user-data-dir={profile_base}")
-options.add_argument(f"profile-directory={profile_name}")
+# options.add_argument(f"user-data-dir={profile_base}")
+# options.add_argument(f"profile-directory={profile_name}")
 options.add_argument("--disable-extensions")
 
 # --- CONFIGURATION ---
-EXCEL_FILE = './information/2025-Projector-Refresh-Import-Header-ForScripting-FULL.xlsx'
+EXCEL_FILE = './information/2025-Projector-Refresh-Import-Header-ForScripting-Subset.xlsx'
 TICKET_PO = '251636'
 PRIORITY = 'Medium'
 ASSIGNED_TO = 'Mark Bartolo'
@@ -58,22 +58,24 @@ try:
     # 1. Navigate to login page and click Sign In
     driver.get('https://mercedcsd.gethelphss.com/Login/landing')
     wait.until(EC.element_to_be_clickable((By.ID, 'signInBtn'))).click()
+
+    driver.save_screenshot("debug_summary_field2png") # take screenshot before crash 
+
     # 2. Handle account selection popup if it appears
-    #continue_btns = driver.find_elements(By.XPATH, "//button[contains(., 'Continue as Mark Bartolo') or contains(., 'mbartolo@mercedcsd.org')]")
     account_btns = driver.find_elements(By.XPATH, f"//div[contains(text(), '{email}')]")
     if account_btns:
         account_btns[0].click()
         print(f"Clicked 'Continue as {email}' or matching account.")
         time.sleep(2)
-        password_field = wait.until(EC.presence_of_element_located((By.NAME, "Passwd")))
-        password_field.send_keys(password)
-        driver.find_element(By.ID, 'passwordNext').click()
-    else:
+        # password_field = wait.until(EC.presence_of_element_located((By.NAME, "Passwd")))
+        # password_field.send_keys(password)
+        # driver.find_element(By.ID, 'passwordNext').click()
+
         # 3. Handle Google SSO fields if no account selection popup
         email_fields = driver.find_elements(By.ID, 'identifierId')
         if email_fields:
             email_field = email_fields[0]
-            if email_field.get_attribute('value') == '' or email_field.get_attribute('value') is None:
+            if not email_field.get_attribute('value'):
                 email_field.send_keys(email)
                 print("Entered email address.")
             else:
@@ -83,7 +85,7 @@ try:
         else:
             print("No email field found; assuming already filled or skipped.")
 
-        # 4. Check for password field and enter password
+        # 4. Enter password if prompted
         password_fields = driver.find_elements(By.NAME, 'Passwd')
         if password_fields:
             password_field = password_fields[0]
